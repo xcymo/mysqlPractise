@@ -1,0 +1,31 @@
+@Test
+	public void insertClob() throws Throwable {
+		Connection conn = null ;
+		PreparedStatement ps = null ;
+		ResultSet rs = null ;
+		try {
+			conn = DButils.getConnection() ;
+			String sql = "insert into clob (txt) values (?)" ;
+			ps = conn.prepareStatement(sql) ;
+			File file = new File("text.txt");
+			BufferedReader br = new BufferedReader(new FileReader(file)) ;
+			int k = 0 ;
+			StringBuffer x = new StringBuffer()  ;
+			char[] arr = new char[1024] ;
+			while ((k = fis.read(arr)) != -1) {
+				char[] arr1 = Arrays.copyOfRange(arr, 0, k) ;
+				for(char a : arr1) {
+					x.append(a) ;
+				}
+			}
+			System.out.println(x);
+			ps.setString(1, x.toString());
+			br.close();
+			int i  = ps.executeUpdate();
+			System.out.println("ÃÌº”¡À" + i +"––°£");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			DButils.closeAll(rs, ps, conn);
+		}
+	}
