@@ -22,7 +22,6 @@
 			ps.setString(1, x.toString());
 			br.close();
 			int i  = ps.executeUpdate();
-			System.out.println("ÃÌº”¡À" + i +"––°£");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
