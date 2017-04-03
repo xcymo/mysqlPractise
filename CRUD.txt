@@ -11,8 +11,7 @@
 			BufferedReader br = new BufferedReader(new FileReader(file)) ;	
 			ps.setCharacterStream(1, br, (int)file.length());
 			br.close();
-			int i  = ps.executeUpdate();
-			System.out.println("ÃÌº”¡À" + i +"––°£");
+			ps.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
