@@ -51,7 +51,7 @@ public class demo2 {
 			}
 			throw e;
 		}finally {
-			
+			DButils.closeAll(rs, stmt, conn);
 		}
 	}
 }
