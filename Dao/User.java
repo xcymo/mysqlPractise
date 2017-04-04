@@ -13,7 +13,32 @@ public class User {
 	private Date birthday ;
 	private String gender ;
 	private String password ;
+	private int money ;
 	
+	public User(int id, String name, Date birthday, String gender, String password, int money) {
+		this.id = id;
+		this.name = name;
+		this.birthday = birthday;
+		this.gender = gender;
+		this.password = password;
+		this.money = money;
+	}
+	public User( String name, Date birthday, String gender, String password, int money) {
+		this.name = name;
+		this.birthday = birthday;
+		this.gender = gender;
+		this.password = password;
+		this.money = money;
+	}
+	public User() {
+		
+	}
+	public int getMoney() {
+		return money;
+	}
+	public void setMoney(int money) {
+		this.money = money;
+	}
 	public String getPassword() {
 		return password;
 	}

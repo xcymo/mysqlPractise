@@ -16,12 +16,13 @@ public class UserDaoImple implements UserDao {
 		ResultSet rs = null ;
 		try {
 			conn = DButils.getConnection();
-			String sql = "insert into user (name,password,birthday,gender) values (?,?,?,?)" ;
+			String sql = "insert into user (name,password,birthday,gender,money) values (?,?,?,?,?)" ;
 			ps = conn.prepareStatement(sql) ;
 			ps.setString(1, user.getName());
 			ps.setString(2, user.getPassword());
 			ps.setDate(3, new java.sql.Date(user.getBirthday().getTime()));
 			ps.setString(4, user.getGender());
+			ps.setInt(5, user.getMoney());
 			ps.executeUpdate() ;
 		}catch(SQLException e) {
 			throw new DaoException(e.getMessage(),e) ;
@@ -57,13 +58,14 @@ public class UserDaoImple implements UserDao {
 		ResultSet rs = null ;
 		try {
 			conn = DButils.getConnection();
-			String sql = "update user set password = ?,birthday = ?,gender = ? where id = ? or name = ?" ;
+			String sql = "update user set password = ?,birthday = ?,gender = ? ,money = ? where id = ? or name = ?" ;
 			ps = conn.prepareStatement(sql) ;
 			ps.setString(1, user.getPassword());
 			ps.setDate(2, new java.sql.Date(user.getBirthday().getTime()));
 			ps.setString(3, user.getGender());
-			ps.setInt(4, user.getId());
-			ps.setString(5, user.getName());
+			ps.setInt(4, user.getMoney());
+			ps.setInt(5, user.getId());
+			ps.setString(6, user.getName());
 			ps.executeUpdate() ;
 		}catch(SQLException e) {
 			throw new DaoException(e.getMessage(),e) ;
@@ -80,7 +82,7 @@ public class UserDaoImple implements UserDao {
 		ResultSet rs = null ;
 		try {
 			conn = DButils.getConnection();
-			String sql = "select id,name,birthday,gender from user where id = ?" ;
+			String sql = "select id,name,birthday,gender,money from user where id = ?" ;
 			ps = conn.prepareStatement(sql) ;
 			ps.setInt(1, UserId);
 			rs = ps.executeQuery() ;
@@ -104,7 +106,7 @@ public class UserDaoImple implements UserDao {
 		ResultSet rs = null ;
 		try {
 			conn = DButils.getConnection();
-			String sql = "select id,name,birthday,gender from user where name = ? and password = ?" ;
+			String sql = "select id,name,birthday,gender,money from user where name = ? and password = ?" ;
 			ps = conn.prepareStatement(sql) ;
 			ps.setString(1, name);
 			ps.setString(2, password);
@@ -127,6 +129,7 @@ public class UserDaoImple implements UserDao {
 		user.setName(rs.getString("name"));
 		user.setBirthday(rs.getDate("birthday"));
 		user.setGender(rs.getString("gender"));
+		user.setMoney(rs.getInt("money"));
 		return user;
 	}
 
