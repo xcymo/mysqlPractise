@@ -6,8 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.sql.ResultSetMetaData;
 
 
@@ -169,6 +171,37 @@ public class UserDaoImple implements UserDao {
 		}
 		
 	}
+	
+	@Override
+	public List<Map<String, Object>> readUser(String sql) {
+		Connection conn = null ;
+		Statement stmt = null ;
+		ResultSet rs = null ;
+		List<Map<String, Object>> datalist = null;
+		try {
+			conn = DButils.getConnection();
+			stmt = conn.createStatement() ;
+			rs = stmt.executeQuery(sql) ;
+			ResultSetMetaData rsmd = rs.getMetaData() ;
+			int count = rsmd.getColumnCount(); 
+			datalist = new ArrayList<>() ;
+			while(rs.next()) {
+				Map<String, Object> data = new LinkedHashMap<String, Object>() ;
+				for(int i = 1; i <= count; i++) {
+					data.put(rsmd.getColumnName(i), rs.getObject(i)) ;
+				}
+				datalist.add(data) ;
+			}
+			
+		}catch(SQLException e)  {
+			throw new DaoException(e.getMessage(),e) ;
+		}finally {
+			DButils.closeAll(rs, stmt, conn);
+		}
+		return datalist ;
+	}
+	
+	
 
 	@Override
 	public User findUser(String name, String password) {
@@ -204,6 +237,5 @@ public class UserDaoImple implements UserDao {
 		user.setMoney(rs.getInt("money"));
 		return user;
 	}
-	
 
 }
