@@ -144,7 +144,7 @@ public class UserDaoImple implements UserDao {
 			ps = conn.prepareStatement(sql) ;
 			ParameterMetaData pmd = ps.getParameterMetaData() ;
 			int count = pmd.getParameterCount() ;
-			if(count != parameter.length || (count > 0 && parameter == null)) {
+			if((count > 0 && parameter == null) || count != (parameter == null?0 : parameter.length)) {
 				throw new DaoException("SQL语句与参数不匹配！") ;
 			}
 			for(int i = 1; i <= count; i++) {
