@@ -4,26 +4,32 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import CRUD.DButils;
 
 public class UserDaoImple implements UserDao {
 
 	@Override
-	public void addUser(User user) {
+	public int addUser(User user) {
 		Connection conn = null ;
 		PreparedStatement ps = null ;
 		ResultSet rs = null ;
 		try {
 			conn = DButils.getConnection();
 			String sql = "insert into user (name,password,birthday,gender,money) values (?,?,?,?,?)" ;
-			ps = conn.prepareStatement(sql) ;
+			ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS) ;
 			ps.setString(1, user.getName());
 			ps.setString(2, user.getPassword());
 			ps.setDate(3, new java.sql.Date(user.getBirthday().getTime()));
 			ps.setString(4, user.getGender());
 			ps.setInt(5, user.getMoney());
 			ps.executeUpdate() ;
+			rs = ps.getGeneratedKeys() ;
+			int id = 0;
+			if(rs.next())
+				id = rs.getInt(1) ;
+			return id ;
 		}catch(SQLException e) {
 			throw new DaoException(e.getMessage(),e) ;
 		}finally {

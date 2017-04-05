@@ -1,7 +1,7 @@
 package Dao;
 
 public interface UserDao {
-	public void addUser(User user) ;
+	public int addUser(User user) ;
 	
 	public void deleteUser(int id,String name,String password) ;
 	
