@@ -1,10 +1,13 @@
 package Dao;
 
 import java.sql.Connection;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import CRUD.DButils;
 
@@ -30,6 +33,34 @@ public class UserDaoImple implements UserDao {
 			if(rs.next())
 				id = rs.getInt(1) ;
 			return id ;
+		}catch(SQLException e) {
+			throw new DaoException(e.getMessage(),e) ;
+		}finally {
+			DButils.closeAll(rs, ps, conn);
+		}
+	}
+	
+	
+	
+	@Override
+	public void addBatchUser() {
+		Connection conn = null ;
+		PreparedStatement ps = null ;
+		ResultSet rs = null ;
+		try {
+			conn = DButils.getConnection();
+			String sql = "insert into user1 (name,password,birthday,gender,money) values (?,?,?,?,?)" ;
+			ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS) ;
+			for(int i = 0; i < 1000; i++) {
+				User user = new User("test" + i, new java.sql.Date(System.currentTimeMillis()), "male", "iamman", 250) ;
+				ps.setString(1, user.getName());
+				ps.setString(2, user.getPassword());
+				ps.setDate(3, new java.sql.Date(user.getBirthday().getTime()));
+				ps.setString(4, user.getGender());
+				ps.setInt(5, user.getMoney());
+				ps.addBatch();
+			}
+			ps.executeBatch() ;
 		}catch(SQLException e) {
 			throw new DaoException(e.getMessage(),e) ;
 		}finally {
@@ -103,6 +134,49 @@ public class UserDaoImple implements UserDao {
 		return user ;
 	}
 	
+	@Override
+	public void readUser(String sql, Object[] parameter) {
+		Connection conn = null ;
+		PreparedStatement ps = null ;
+		ResultSet rs = null ;
+		try {
+			conn = DButils.getConnection();
+			ps = conn.prepareStatement(sql) ;
+			ParameterMetaData pmd = ps.getParameterMetaData() ;
+			int count = pmd.getParameterCount() ;
+			if(count != parameter.length || (count > 0 && parameter == null)) {
+				throw new DaoException("SQL语句与参数不匹配！") ;
+			}
+			for(int i = 1; i <= count; i++) {
+				ps.setObject(i, parameter[i-1]);
+			}
+			rs = ps.executeQuery() ;
+			
+			Pattern p = Pattern.compile("select .* from") ;
+			Matcher m = p.matcher(sql) ;
+			int i = 1;
+			while(m.find()) {
+				String s = m.group(0);
+				Pattern p1 = Pattern.compile(",") ;
+				Matcher m1 = p1.matcher(s) ;
+				while(m1.find()) {
+					i ++;
+				}
+			}
+			
+			while(rs.next()) {
+				for(int j = 1; j <= i; j++) {
+					System.out.print(rs.getObject(j) + "\t");
+				}
+				System.out.println();
+			}
+		}catch(SQLException e) {
+			throw new DaoException(e.getMessage(),e) ;
+		}finally {
+			DButils.closeAll(rs, ps, conn);
+		}
+		
+	}
 
 	@Override
 	public User findUser(String name, String password) {
@@ -138,5 +212,6 @@ public class UserDaoImple implements UserDao {
 		user.setMoney(rs.getInt("money"));
 		return user;
 	}
+	
 
 }
