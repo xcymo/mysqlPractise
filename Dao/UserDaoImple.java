@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.sql.ResultSetMetaData;
+
 
 import CRUD.DButils;
 
@@ -151,25 +153,15 @@ public class UserDaoImple implements UserDao {
 				ps.setObject(i, parameter[i-1]);
 			}
 			rs = ps.executeQuery() ;
-			
-			Pattern p = Pattern.compile("select .* from") ;
-			Matcher m = p.matcher(sql) ;
-			int i = 1;
-			while(m.find()) {
-				String s = m.group(0);
-				Pattern p1 = Pattern.compile(",") ;
-				Matcher m1 = p1.matcher(s) ;
-				while(m1.find()) {
-					i ++;
-				}
-			}
-			
+			ResultSetMetaData rsmd = rs.getMetaData() ;
+			int i = rsmd.getColumnCount() ;
 			while(rs.next()) {
 				for(int j = 1; j <= i; j++) {
 					System.out.print(rs.getObject(j) + "\t");
 				}
 				System.out.println();
 			}
+			
 		}catch(SQLException e) {
 			throw new DaoException(e.getMessage(),e) ;
 		}finally {
