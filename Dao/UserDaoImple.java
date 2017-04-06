@@ -1,5 +1,6 @@
 package Dao;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -201,7 +202,45 @@ public class UserDaoImple implements UserDao {
 		return datalist ;
 	}
 	
-	
+	@Override
+	public List<Object> readObject(String sql,Class clazz) {
+		Connection conn = null ;
+		Statement stmt = null ;
+		ResultSet rs = null ;
+		List<Object> list = null ; 
+		try {
+			conn = DButils.getConnection();
+			stmt = conn.createStatement() ;
+			rs = stmt.executeQuery(sql) ;
+			ResultSetMetaData rsmd = rs.getMetaData() ;
+			int count = rsmd.getColumnCount() ;
+			String[] colName = new String[count] ;
+			Method[] methods = clazz.getMethods() ;
+			for (int i = 1; i <= count; i++ ) {
+				colName[i-1] = rsmd.getColumnLabel(i) ;
+			}
+			String methodName;
+			list = new ArrayList<>() ;
+			while(rs.next()) {
+				Object obj = clazz.newInstance() ;
+				for(int i = 0; i < count; i++) {
+					methodName = "set" + colName[i] ;
+					for(Method m : methods) {
+						if(m.getName().equals(methodName)) {
+							m.invoke(obj, rs.getObject(colName[i])) ;
+						}
+					}
+				}
+				list.add(obj) ;
+			}
+		}catch(Exception e)  {
+			throw new DaoException(e.getMessage(),e) ;
+		}
+		finally {
+			DButils.closeAll(rs, stmt, conn);
+		}
+		return list;
+	}
 
 	@Override
 	public User findUser(String name, String password) {

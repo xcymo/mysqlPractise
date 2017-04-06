@@ -15,6 +15,8 @@ public interface UserDao {
 	public User readUser(int UserId) ;
 	
 	public void readUser(String sql,Object[] parameter) ;
+
+	public List<Object> readObject(String sql,Class clazz) ;
 	
 	public List<Map<String,Object>> readUser(String sql) ;
 	
