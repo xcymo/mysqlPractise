@@ -17,26 +17,11 @@ import JDBC_try.Emp;
 
 public class DButils {
 	
-	private static String driver ;
-	private static String url ;
-	private static String usersname ;
-	private static String password  ;
-	
-	static {
-		ResourceBundle rb = ResourceBundle.getBundle("info") ;
-		driver = rb.getString("driver") ;
-		url = rb.getString("url") ;
-		usersname = rb.getString("usersname") ;
-		password = rb.getString("password") ;
-		try {
-			Class.forName(driver) ;
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+
+	private static MydataSource mds = new MydataSource() ;
 	//创建连接
 	public static Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(url, usersname, password) ;
+		return mds.getConnection() ;
 	}
 	//关闭流
 	public static void closeAll(ResultSet rs, Statement stmt, Connection conn) {
