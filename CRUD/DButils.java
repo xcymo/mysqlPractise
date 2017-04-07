@@ -1,30 +1,47 @@
 package CRUD;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.ResourceBundle;
+import java.util.Properties;
 
-import org.junit.Test;
+import javax.sql.DataSource;
 
-import JDBC_try.Emp;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
+
 
 
 public class DButils {
+	private static DataSource mydataSource = null ;
 	
-
-	private static MydataSource mds = new MydataSource() ;
-	//创建连接
-	public static Connection getConnection() throws SQLException {
-		return mds.getConnection() ;
+	static{
+		try {
+			Properties prop = new Properties();
+//			InputStream is = DButils.class.getClassLoader()
+//			.getResourceAsStream("dbcpconfig.properties") ;
+			InputStream is = new FileInputStream(new File("dbcpconfig.properties")) ;
+			prop.load(is);
+			Class.forName(prop.getProperty("driverClassName")) ;
+			mydataSource = BasicDataSourceFactory.createDataSource(prop) ;
+		} catch (Exception e) {
+			e.printStackTrace();
+//			throw new ExceptionInInitializerError();
+		}
+		
 	}
-	//关闭流
-	public static void closeAll(ResultSet rs, Statement stmt, Connection conn) {
+	
+	
+	public static Connection getConnection() throws SQLException {
+		return mydataSource.getConnection() ;
+	}
+	
+	public static void closeAll(ResultSet rs, 
+								Statement stmt, 
+								Connection conn) {
 		if (rs != null) {
 			try {
 				rs.close();
@@ -48,92 +65,4 @@ public class DButils {
 		}
 	}
 	
-	@Test
-	public static void testSelect(int empno) {
-		Connection conn = null ;
-		PreparedStatement ps = null ; 
-		ResultSet rs = null ;
-		
-		try {
-			conn = getConnection() ;
-			String sql = "select * from emp where empno = ?" ;
-			ps = conn.prepareStatement(sql);
-			ps.setInt(1, empno);
-			rs = ps.executeQuery() ;
-			
-			ArrayList<Emp> list = new ArrayList<>() ;
-			while(rs.next()) {
-				Emp e = new Emp() ;
-				e.setComm(rs.getInt("comm"));
-				e.setDeptno(rs.getInt("deptno"));
-				e.setEmpno(rs.getInt("empno"));
-				e.setEname(rs.getString("ename"));
-				e.setHiredate((Date)rs.getObject("hiredate"));
-				e.setJob(rs.getString("job"));
-				e.setMgr(rs.getInt("mgr"));
-				e.setSal(rs.getInt("sal"));
-				list.add(e) ;
-			}
-			closeAll(rs,ps,conn) ;
-			for (Emp emp : list) {
-				System.out.println(emp);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	@Test
-	public static void testInsert() {
-		Connection conn = null ;
-		Statement stmt = null ;
-		ResultSet rs = null ;
-		
-		try {
-			conn = getConnection() ;
-			stmt = conn.createStatement() ;
-			int i = stmt.executeUpdate("insert into emp (empno,ename,job,mgr,"
-					+ "hiredate,sal,comm,deptno) values (7979,'JASON','MANAGER',"
-					+ "7839,'1989-8-8',1515,0,20)") ;
-			closeAll(rs,stmt,conn) ;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	@Test
-	public static void testDelete() {
-		Connection conn = null ;
-		Statement stmt = null ;
-		ResultSet rs = null ;
-		
-		try {
-			conn = getConnection() ;
-			stmt = conn.createStatement() ;
-			int i = stmt.executeUpdate("delete from emp where empno = 7979") ;
-			closeAll(rs,stmt,conn) ;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	@Test
-	public static void testUpdate() {
-		Connection conn = null ;
-		Statement stmt = null ;
-		ResultSet rs = null ;
-		
-		try {
-			conn = getConnection() ;
-			stmt = conn.createStatement() ;
-			int i = stmt.executeUpdate("update emp set sal = 5555 where empno = 7979") ;
-			closeAll(rs,stmt,conn) ;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
 }

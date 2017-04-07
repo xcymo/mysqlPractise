@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserDao {
-	public int addUser(User user) ;
+	public void addUser(User user) ;
 	
-	public void addBatchUser() ;
+	public void addBatchUser(List list) ;
 	
 	public void deleteUser(int id,String name,String password) ;
 	
-	public void UpdateUser(User user) ;
+	public void UpdateUser(String gender,int id) ;
 	
 	public User readUser(int UserId) ;
 	

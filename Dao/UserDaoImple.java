@@ -16,45 +16,74 @@ import java.sql.ResultSetMetaData;
 
 import CRUD.DButils;
 
-public class UserDaoImple implements UserDao {
+public class UserDaoImple extends AbstractDao implements UserDao {
 
 	@Override
-	public int addUser(User user) {
-		Connection conn = null ;
-		PreparedStatement ps = null ;
-		ResultSet rs = null ;
-		try {
-			conn = DButils.getConnection();
-			String sql = "insert into user (name,password,birthday,gender,money) values (?,?,?,?,?)" ;
-			ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS) ;
-			ps.setString(1, user.getName());
-			ps.setString(2, user.getPassword());
-			ps.setDate(3, new java.sql.Date(user.getBirthday().getTime()));
-			ps.setString(4, user.getGender());
-			ps.setInt(5, user.getMoney());
-			ps.executeUpdate() ;
-			rs = ps.getGeneratedKeys() ;
-			int id = 0;
-			if(rs.next())
-				id = rs.getInt(1) ;
-			return id ;
-		}catch(SQLException e) {
-			throw new DaoException(e.getMessage(),e) ;
-		}finally {
-			DButils.closeAll(rs, ps, conn);
-		}
+	public void addUser(User user) {
+		String sql = "insert into user (name,password,"
+				+ "birthday,gender,money) values (?,?,?,?,?)" ;
+		Object[] args = {user.getName(),user.getPassword
+				(),user.getBirthday(),user.getGender(),user.getMoney()} ;
+		super.Create(sql, args) ;
 	}
 	
-	
+	@Override
+	public void deleteUser(int id,String name,String password) {
+			String sql = "delete from user where id = ? and name = ? and password = ?" ;
+			Object[] args = {id,name,password} ;
+			int i = super.Delete(sql, args) ;
+			System.out.println("…æ≥˝¡À" + i + "––");
+	}
 	
 	@Override
+	public void UpdateUser(String gender,int id) {
+		String sql = "update user set gender = ? where id = ?" ;
+		Object[] args = {"∞¢Ωø","female",1} ;
+		int i = super.Update(sql, args);
+		System.out.println("–ﬁ∏ƒ¡À" + i + "––");
+	}
+	
+	@Override
+	public User readUser(int UserId) {
+		String sql = "select id,name,gender,birthday,money from user where id = ?" ;
+		return (User)super.Read(sql, UserId) ;
+	}
+	
+
+	@Override
+	protected Object rowMap(ResultSet rs) throws SQLException {
+		User user = new User();
+		user.setId(rs.getInt("id"));
+		user.setName(rs.getString("name"));
+		user.setGender(rs.getString("gender"));
+		user.setBirthday(rs.getDate("birthday"));
+		user.setMoney(rs.getInt("money"));
+		return user;
+	}
+	
+	@Override
+	protected Object[] getElement(Object obj){
+		User user = (User)obj;
+		Object[] elements = {user.getName(),user.getPassword(),
+				user.getBirthday(),user.getGender(),user.getMoney()} ;
+		return elements;
+	}
+	@Override
+	public void addBatchUser(List list) {
+		String sql = "insert into user (name,password,"
+				+ "birthday,gender,money) values (?,?,?,?,?)" ;
+		super.CreateBatch(sql, list);
+		
+	}
+
 	public void addBatchUser() {
 		Connection conn = null ;
 		PreparedStatement ps = null ;
 		ResultSet rs = null ;
 		try {
 			conn = DButils.getConnection();
-			String sql = "insert into user1 (name,password,birthday,gender,money) values (?,?,?,?,?)" ;
+			String sql = "insert into user (name,password,"
+					+ "birthday,gender,money) values (?,?,?,?,?)" ;
 			ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS) ;
 			for(int i = 0; i < 1000; i++) {
 				User user = new User("test" + i, new java.sql.Date(System.currentTimeMillis()), "male", "iamman", 250) ;
@@ -73,71 +102,6 @@ public class UserDaoImple implements UserDao {
 		}
 	}
 
-	@Override
-	public void deleteUser(int id,String name,String password) {
-		Connection conn = null ;
-		PreparedStatement ps = null ;
-		ResultSet rs = null ;
-		try {
-			conn = DButils.getConnection();
-			String sql = "delete from user where id = ? and name = ? and password = ?" ;
-			ps = conn.prepareStatement(sql) ;
-			ps.setInt(1, id);
-			ps.setString(2, name);
-			ps.setString(3, password);
-			ps.executeUpdate() ;
-		}catch(SQLException e) {
-			throw new DaoException(e.getMessage(),e) ;
-		}finally {
-			DButils.closeAll(rs, ps, conn);
-		}
-	}
-
-	@Override
-	public void UpdateUser(User user) {
-		Connection conn = null ;
-		PreparedStatement ps = null ;
-		ResultSet rs = null ;
-		try {
-			conn = DButils.getConnection();
-			String sql = "update user set password = ?,birthday = ?,gender = ? ,money = ? where id = ? or name = ?" ;
-			ps = conn.prepareStatement(sql) ;
-			ps.setString(1, user.getPassword());
-			ps.setDate(2, new java.sql.Date(user.getBirthday().getTime()));
-			ps.setString(3, user.getGender());
-			ps.setInt(4, user.getMoney());
-			ps.setInt(5, user.getId());
-			ps.setString(6, user.getName());
-			ps.executeUpdate() ;
-		}catch(SQLException e) {
-			throw new DaoException(e.getMessage(),e) ;
-		}finally {
-			DButils.closeAll(rs, ps, conn);
-		}
-	}
-
-	@Override
-	public User readUser(int UserId) {
-		User user = null ;
-		Connection conn = null ;
-		PreparedStatement ps = null ;
-		ResultSet rs = null ;
-		try {
-			conn = DButils.getConnection();
-			String sql = "select id,name,birthday,gender,money from user where id = ?" ;
-			ps = conn.prepareStatement(sql) ;
-			ps.setInt(1, UserId);
-			rs = ps.executeQuery() ;
-			while(rs.next()) {
-				user = mappingUser(rs);
-			}
-		}catch(SQLException e) {
-			throw new DaoException(e.getMessage(),e) ;
-		}finally {
-			DButils.closeAll(rs, ps, conn);
-		}
-		return user ;
-	}
 	
 	@Override
 	public void readUser(String sql, Object[] parameter) {
@@ -150,7 +114,7 @@ public class UserDaoImple implements UserDao {
 			ParameterMetaData pmd = ps.getParameterMetaData() ;
 			int count = pmd.getParameterCount() ;
 			if((count > 0 && parameter == null) || count != (parameter == null?0 : parameter.length)) {
-				throw new DaoException("SQLËØ≠Âè•‰∏éÂèÇÊï∞‰∏çÂåπÈÖçÔºÅ") ;
+				throw new DaoException("SQL”Ôæ‰”Î≤Œ ˝≤ª∆•≈‰£°") ;
 			}
 			for(int i = 1; i <= count; i++) {
 				ps.setObject(i, parameter[i-1]);
@@ -277,4 +241,5 @@ public class UserDaoImple implements UserDao {
 		return user;
 	}
 
+	
 }

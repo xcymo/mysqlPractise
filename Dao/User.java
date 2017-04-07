@@ -5,8 +5,8 @@ import java.util.Date;
 public class User {
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", birthday=" + birthday + ", gender=" + gender + ", password="
-				+ password + "]";
+		return "User [id=" + id + ", name=" + name + ", birthday=" + birthday + ", gender=" + gender + ", money="
+				+ money + "]";
 	}
 	private int id ;
 	private String name ;
