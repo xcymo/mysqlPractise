@@ -11,12 +11,17 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.transform.Templates;
+
 import java.sql.ResultSetMetaData;
 
 
 import CRUD.DButils;
 
 public class UserDaoImple extends AbstractDao implements UserDao {
+	MyTemplate template = new MyTemplate() ;
+	
 
 	@Override
 	public void addUser(User user) {
@@ -32,21 +37,36 @@ public class UserDaoImple extends AbstractDao implements UserDao {
 			String sql = "delete from user where id = ? and name = ? and password = ?" ;
 			Object[] args = {id,name,password} ;
 			int i = super.Delete(sql, args) ;
-			System.out.println("ɾ����" + i + "��");
+			System.out.println("删除" + i + "行");
 	}
 	
 	@Override
 	public void UpdateUser(String gender,int id) {
 		String sql = "update user set gender = ? where id = ?" ;
-		Object[] args = {"����","female",1} ;
+		Object[] args = {"阿瘪","female",1} ;
 		int i = super.Update(sql, args);
-		System.out.println("�޸���" + i + "��");
+		System.out.println("修改了" + i + "行");
 	}
 	
 	@Override
 	public User readUser(int UserId) {
 		String sql = "select id,name,gender,birthday,money from user where id = ?" ;
-		return (User)super.Read(sql, UserId) ;
+		Object[] args = {UserId} ;
+		
+		Object obj = template.find(sql, args, new RowMap() {
+			@Override
+			public Object doMap(ResultSet rs) throws SQLException {
+				User u = new User();
+					u.setId(rs.getInt("id"));
+					u.setName(rs.getString("name"));
+					u.setGender(rs.getString("gender"));
+					u.setBirthday(rs.getDate("birthday"));
+					u.setMoney(rs.getInt("money"));
+				return u;
+			}
+		});
+		return (User)obj;
+		
 	}
 	
 
