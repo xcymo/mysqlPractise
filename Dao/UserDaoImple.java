@@ -32,15 +32,15 @@ public class UserDaoImple extends AbstractDao implements UserDao {
 			String sql = "delete from user where id = ? and name = ? and password = ?" ;
 			Object[] args = {id,name,password} ;
 			int i = super.Delete(sql, args) ;
-			System.out.println("ɾ����" + i + "��");
+			System.out.println("删除了" + i + "行");
 	}
 	
 	@Override
 	public void UpdateUser(String gender,int id) {
 		String sql = "update user set gender = ? where id = ?" ;
-		Object[] args = {"����","female",1} ;
+		Object[] args = {"阿瘪","female",1} ;
 		int i = super.Update(sql, args);
-		System.out.println("�޸���" + i + "��");
+		System.out.println("修改了" + i + "行");
 	}
 	
 	@Override
