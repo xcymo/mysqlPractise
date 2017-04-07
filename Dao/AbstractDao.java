@@ -13,7 +13,7 @@ import CRUD.DButils;
 public abstract class AbstractDao {
 	
 	/*
-	 * 直接用Update()的功能实现Create和Delete
+	 *鐢║pdate()瀹炵幇Create鍜孌elete
 	 */
 	public int Delete(String sql,Object[] args) {
 		return Update(sql,args) ;

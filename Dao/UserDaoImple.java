@@ -32,15 +32,15 @@ public class UserDaoImple extends AbstractDao implements UserDao {
 			String sql = "delete from user where id = ? and name = ? and password = ?" ;
 			Object[] args = {id,name,password} ;
 			int i = super.Delete(sql, args) ;
-			System.out.println("É¾³ıÁË" + i + "ĞĞ");
+			System.out.println("É¾ï¿½ï¿½ï¿½ï¿½" + i + "ï¿½ï¿½");
 	}
 	
 	@Override
 	public void UpdateUser(String gender,int id) {
 		String sql = "update user set gender = ? where id = ?" ;
-		Object[] args = {"°¢½¿","female",1} ;
+		Object[] args = {"ï¿½ï¿½ï¿½ï¿½","female",1} ;
 		int i = super.Update(sql, args);
-		System.out.println("ĞŞ¸ÄÁË" + i + "ĞĞ");
+		System.out.println("ï¿½Ş¸ï¿½ï¿½ï¿½" + i + "ï¿½ï¿½");
 	}
 	
 	@Override
@@ -114,7 +114,7 @@ public class UserDaoImple extends AbstractDao implements UserDao {
 			ParameterMetaData pmd = ps.getParameterMetaData() ;
 			int count = pmd.getParameterCount() ;
 			if((count > 0 && parameter == null) || count != (parameter == null?0 : parameter.length)) {
-				throw new DaoException("SQLÓï¾äÓë²ÎÊı²»Æ¥Åä£¡") ;
+				throw new DaoException("SQLè¯­å¥å’Œå‚æ•°ä¸åŒ¹é…ï¼") ;
 			}
 			for(int i = 1; i <= count; i++) {
 				ps.setObject(i, parameter[i-1]);

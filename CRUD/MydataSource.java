@@ -57,7 +57,7 @@ public class MydataSource implements DataSource {
 				createConnection();
 				return getConnection();
 			}
-			throw new SQLException("Á¬½ÓÒÑÂú");
+			throw new SQLException("è¿æ¥å·²ç”¨å®Œï¼");
 		}
 	}
 	
